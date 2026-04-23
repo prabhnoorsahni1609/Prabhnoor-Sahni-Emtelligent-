@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strategic Situation Room — emtelligent</title>
+  <style>
+    :root {
+      --bg: #f6f2eb;
+      --bg2: #ece6db;
+      --surface: #ffffff;
+      --ink: #171411;
+      --ink2: #4c453d;
+      --ink3: #7d756d;
+      --border: #d6cec2;
+      --border2: #b9afa1;
+      --red: #b54132;
+      --red-bg: rgba(181,65,50,.08);
+      --green: #1e6a42;
+      --green-bg: rgba(30,106,66,.08);
+      --amber: #a46212;
+      --amber-bg: rgba(164,98,18,.08);
+      --blue: #1f4f82;
+      --blue-bg: rgba(31,79,130,.08);
+      --shadow: 0 8px 24px rgba(23,20,17,.06);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(0,0,0,.02) 1px, transparent 1px);
+      background-size: 10px 10px;
+      opacity: .35;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    .masthead {
+      border-top: 3px solid var(--ink);
+      border-bottom: 3px double var(--border2);
+      padding: 18px 0 22px;
+      margin-bottom: 22px;
+    }
+
+    .masthead-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink3);
+      margin-bottom: 14px;
+    }
+
+    .masthead h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+      font-size: clamp(2.4rem, 5vw, 4.25rem);
+      line-height: .95;
+      letter-spacing: -.03em;
+    }
+
+    .subhead {
+      margin-top: 10px;
+      max-width: 760px;
+      color: var(--ink2);
+      font-size: 15px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      color: var(--ink2);
+      padding: 11px 14px;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: .18s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .tab.active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.45fr .8fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .label {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink3);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .tag.red { background: var(--red-bg); color: var(--red); }
+    .tag.green { background: var(--green-bg); color: var(--green); }
+    .tag.amber { background: var(--amber-bg); color: var(--amber); }
+    .tag.blue { background: var(--blue-bg); color: var(--blue); }
+
+    .card-body { padding: 18px; }
+
+    .headline {
+      margin: 0 0 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+      font-size: 1.85rem;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+    }
+
+    .context {
+      color: var(--ink2);
+      font-size: 14px;
+      line-height: 1.72;
+      margin-bottom: 18px;
+    }
+
+    .stack {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    .stack-title {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink3);
+      margin-bottom: 10px;
+    }
+
+    .assumption {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--bg2);
+    }
+
+    .assumption:last-child { border-bottom: none; }
+    .assumption-num {
+      color: var(--ink3);
+      font-size: 12px;
+      font-weight: 600;
+      padding-top: 2px;
+    }
+
+    .assumption-text {
+      font-size: 13px;
+      color: var(--ink2);
+      line-height: 1.6;
+    }
+
+    .last-run {
+      background: var(--ink);
+      color: #fff;
+      padding: 20px 22px;
+      margin-top: 18px;
+    }
+
+    .last-run .label { color: rgba(255,255,255,.56); }
+    .last-run h3 {
+      margin: 6px 0 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+      font-size: 1.45rem;
+      line-height: 1.2;
+    }
+
+    .run-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .run-block {
+      border-top: 1px solid rgba(255,255,255,.16);
+      padding-top: 12px;
+    }
+
+    .run-block-title {
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.62);
+      margin-bottom: 8px;
+    }
+
+    .run-block p {
+      margin: 0;
+      color: rgba(255,255,255,.92);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .analysis-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 0;
+    }
+
+    .analysis-col {
+      padding: 18px;
+      border-right: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+    }
+
+    .analysis-col:nth-child(2n) { border-right: none; }
+    .analysis-col-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink3);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+    }
+
+    .dot.green { background: var(--green); }
+    .dot.red { background: var(--red); }
+    .dot.amber { background: var(--amber); }
+    .dot.blue { background: var(--blue); }
+
+    .analysis-item {
+      padding: 9px 0;
+      border-bottom: 1px solid var(--bg2);
+      color: var(--ink2);
+      font-size: 13px;
+      line-height: 1.68;
+    }
+
+    .analysis-item:last-child { border-bottom: none; }
+
+    .sidebar .card + .card { margin-top: 18px; }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--bg2);
+      font-size: 13px;
+    }
+
+    .metric-row:last-child { border-bottom: none; }
+    .metric-key { color: var(--ink2); }
+    .metric-val {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .metric-val.red { color: var(--red); }
+    .metric-val.green { color: var(--green); }
+    .metric-val.amber { color: var(--amber); }
+    .metric-val.blue { color: var(--blue); }
+
+    .framework-note {
+      margin: 0;
+      color: var(--ink2);
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--ink3);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+      .analysis-columns, .run-grid { grid-template-columns: 1fr; }
+      .analysis-col { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="masthead">
+      <div class="masthead-meta">
+        <span>Vol. I · Strategy Group</span>
+        <span>emtelligent · Clinical AI Infrastructure</span>
+        <span id="dateStamp"></span>
+      </div>
+      <h1>Strategic Situation Room</h1>
+      <div class="subhead">
+        Built to answer the questions that actually change decisions. Not a research dump. A lightweight system for the room where emtelligent bets are made.
+      </div>
+    </section>
+
+    <div class="toolbar" id="tabs"></div>
+
+    <div class="grid">
+      <main>
+        <section class="card">
+          <div class="card-header">
+            <span class="label">Situation Brief</span>
+            <span class="tag" id="situationTag"></span>
+          </div>
+          <div class="card-body">
+            <h2 class="headline" id="headline"></h2>
+            <div class="context" id="context"></div>
+
+            <div class="stack">
+              <div class="stack-title">What this situation is actually betting on</div>
+              <div id="assumptions"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="last-run" id="lastRun">
+          <div class="label">Last strategic run</div>
+          <h3 id="runTitle"></h3>
+          <div class="run-grid">
+            <div class="run-block">
+              <div class="run-block-title">Decision</div>
+              <p id="runDecision"></p>
+            </div>
+            <div class="run-block">
+              <div class="run-block-title">Why</div>
+              <p id="runWhy"></p>
+            </div>
+            <div class="run-block">
+              <div class="run-block-title">Recommended move</div>
+              <p id="runMove"></p>
+            </div>
+            <div class="run-block">
+              <div class="run-block-title">Next 48 hours</div>
+              <p id="runNext"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:18px;">
+          <div class="card-header">
+            <span class="label">Decision ready analysis</span>
+            <span class="tag blue">Live framework</span>
+          </div>
+          <div class="analysis-columns" id="analysis"></div>
+        </section>
+      </main>
+
+      <aside class="sidebar">
+        <section class="card">
+          <div class="card-header">
+            <span class="label">Signal board</span>
+            <span class="tag amber">What matters</span>
+          </div>
+          <div class="card-body" id="signals"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <span class="label">Framework note</span>
+            <span class="tag green">Operating logic</span>
+          </div>
+          <div class="card-body">
+            <p class="framework-note">
+              Start from the decision. Work backward to what drives it. Remove everything that does not materially change the answer, even if it appears important at first pass.
+            </p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <span class="label">Why this exists</span>
+            <span class="tag blue">Submission note</span>
+          </div>
+          <div class="card-body">
+            <p class="framework-note">
+              Built as a lightweight system for structuring ambiguous inputs into decision ready outputs across competitor moves, vertical prioritization, and go to market performance.
+            </p>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <span>Strategic Situation Room</span>
+      <span>Built for emtelligent application</span>
+      <span>Prabhnoor · Barnard College · Economics & Mathematics</span>
+    </footer>
+  </div>
+
+  <script>
+    const scenarios = [
+      {
+        tab: 'Competitor raises $200M',
+        tagText: 'High threat',
+        tagClass: 'red',
+        headline: 'A competitor raises $200M and moves deeper into clinical NLP infrastructure.',
+        context: 'The immediate question is not whether the headline matters. It is whether emtelligent should respond by contesting the same wedge, or double down where its accuracy, traceability, and coded outputs compound faster.',
+        assumptions: [
+          { label: '01', text: 'Clinical NLP remains differentiated in high stakes workflows where traceability matters more than convenience.', cls: 'green', tag: 'High conviction' },
+          { label: '02', text: 'Buyer behavior in payer and pharma segments will continue to reward structured outputs over clinician facing workflow polish.', cls: 'amber', tag: 'Test this' },
+          { label: '03', text: 'Platform bundling does not compress specialist advantage before emtelligent reaches scale.', cls: 'red', tag: 'Most exposed' }
+        ],
+        lastRun: {
+          title: 'Competitor expansion scenario',
+          decision: 'Do not chase the loudest category. Concentrate on payer and pharma use cases where structured outputs are already decision relevant.',
+          why: 'The loudest competitor move is in a segment where distribution and workflow integration dominate. emtelligent wins where accuracy, auditability, and coded outputs directly shape ROI.',
+          move: 'Sharpen positioning around deterministic infrastructure and explicitly avoid being framed as another ambient documentation play.',
+          next: 'Pressure test buyer messaging across payer and pharma accounts, then update the competitive narrative used in investor and GTM materials.'
+        },
+        signals: [
+          ['Buyer overlap with emtelligent', 'Partial', 'amber'],
+          ['Risk of narrative compression', 'High', 'red'],
+          ['Traceability as moat', 'Material', 'green'],
+          ['Platform bundling risk', 'Rising', 'red'],
+          ['Fastest path to revenue', 'Payer / Pharma', 'green']
+        ],
+        analysis: [
+          {
+            title: 'Where we win',
+            dot: 'green',
+            items: [
+              'The strongest fit is where coded, auditable outputs directly map to reimbursement, prior authorization, trial matching, or downstream analytics workflows.',
+              'emtelligent has a cleaner story when the buyer cares about reliability and structured extraction, not clinician delight or point of care workflow design.',
+              'A focused positioning strategy prevents the company from being pulled into a segment where larger incumbents are already advantaged.'
+            ]
+          },
+          {
+            title: 'Where we are exposed',
+            dot: 'red',
+            items: [
+              'If buyers begin treating all clinical NLP as interchangeable, category confusion will compress perceived differentiation.',
+              'If bundled platform distribution closes the gap faster than specialist accuracy compounds, the burden on GTM messaging rises materially.',
+              'Health system oriented competition can still shape the narrative investors hear, even if it is not the right segment to chase.'
+            ]
+          },
+          {
+            title: 'The assumption that matters most',
+            dot: 'amber',
+            items: [
+              'That high stakes buyers will continue to care more about traceability and structured outputs than about having the most visible product category.'
+            ]
+          },
+          {
+            title: 'What leadership should do now',
+            dot: 'blue',
+            items: [
+              'Treat this as a positioning problem before treating it as a product problem.',
+              'Tighten the narrative around deterministic infrastructure and show clearly why payer and pharma economics are more attractive at this stage.',
+              'Update investor materials so the company is not evaluated against the wrong competitor set.'
+            ]
+          }
+        ]
+      },
+      {
+        tab: 'Vertical selection',
+        tagText: 'Strategic choice',
+        tagClass: 'amber',
+        headline: 'Payers, pharma, or health systems. One of these should anchor the next phase of growth.',
+        context: 'The problem is not identifying all possible markets. It is deciding which vertical best matches current product strengths, sales velocity, and the kind of evidence the team can credibly produce at seed stage.',
+        assumptions: [
+          { label: '01', text: 'Payers offer the cleanest near term ROI story because coded outputs map directly into existing administrative and clinical workflows.', cls: 'green', tag: 'High conviction' },
+          { label: '02', text: 'Pharma is the fastest way to monetize specialized use cases if domain specificity can be tightened quickly.', cls: 'amber', tag: 'Test this' },
+          { label: '03', text: 'Health systems are too slow and too integration heavy to be the first anchor despite their large TAM.', cls: 'red', tag: 'Most exposed' }
+        ],
+        lastRun: {
+          title: 'Vertical prioritization run',
+          decision: 'Prioritize payers first, build toward pharma second, and treat health systems as a later expansion market.',
+          why: 'Payers combine clearer ROI, shorter procurement cycles, and tighter alignment with structured outputs. Health systems offer scale, but not the best first proof point at this stage.',
+          move: 'Organize GTM messaging and pipeline reviews around payer use cases where value realization is easiest to defend.',
+          next: 'Build a narrow list of payer workflows with explicit ROI logic, then define which pharma use cases can reuse the same technical edge.'
+        },
+        signals: [
+          ['Fastest cycle', 'Pharma', 'green'],
+          ['Best fit to current outputs', 'Payers', 'green'],
+          ['Largest TAM', 'Health systems', 'blue'],
+          ['Integration burden', 'Highest in health systems', 'red'],
+          ['Best seed stage anchor', 'Payers', 'green']
+        ],
+        analysis: [
+          {
+            title: 'Recommended priority',
+            dot: 'green',
+            items: [
+              'Payers are the right first anchor because the connection between structured clinical extraction and buyer value is the easiest to make explicit.',
+              'This path also creates the cleanest operating logic for sales, product prioritization, and investor messaging.'
+            ]
+          },
+          {
+            title: 'Why not the others first',
+            dot: 'red',
+            items: [
+              'Pharma can move quickly, but domain specificity can make the market look broader than it is in practice.',
+              'Health systems are strategically important, but they are more exposed to long cycles, incumbent relationships, and workflow dependency.'
+            ]
+          },
+          {
+            title: 'The bet this makes',
+            dot: 'amber',
+            items: [
+              'That payer buyers will value traceable, structured outputs enough to support a repeatable GTM motion before adjacent verticals become necessary.'
+            ]
+          },
+          {
+            title: 'Second move',
+            dot: 'blue',
+            items: [
+              'Once payer traction is legible, expand into pharma use cases that share a similar logic around targeted extraction and measurable downstream value.'
+            ]
+          }
+        ]
+      },
+      {
+        tab: 'GTM performance',
+        tagText: 'Operational',
+        tagClass: 'blue',
+        headline: 'Leadership needs real time visibility into GTM performance. The real question is what not to measure.',
+        context: 'At this stage, the risk is not missing a metric. The risk is building reporting that creates motion without clarity. The dashboard should reduce ambiguity, not memorialize every datapoint available.',
+        assumptions: [
+          { label: '01', text: 'Pipeline velocity is more decision relevant than raw pipeline size when the team is still learning where the motion works.', cls: 'green', tag: 'High conviction' },
+          { label: '02', text: 'Deal progression by vertical says more about ICP quality than top of funnel volume does.', cls: 'amber', tag: 'Test this' },
+          { label: '03', text: 'Logo count is less useful than whether early customers can expand or produce compelling proof points.', cls: 'red', tag: 'Most exposed' }
+        ],
+        lastRun: {
+          title: 'GTM visibility run',
+          decision: 'Track the few numbers that change weekly decisions and ignore everything that only creates commentary.',
+          why: 'At seed stage, visibility should help leadership decide where the motion is working, where it is stalling, and whether the ICP is being defined correctly.',
+          move: 'Center reporting on stage to stage conversion, pipeline velocity, vertical mix, and evidence of repeatable value.',
+          next: 'Build a one page leadership dashboard that can be understood in under five minutes and reviewed weekly.'
+        },
+        signals: [
+          ['Most predictive metric', 'Pipeline velocity', 'green'],
+          ['Vanity metric risk', 'High', 'red'],
+          ['Reporting cadence', 'Weekly', 'blue'],
+          ['Best test of ICP quality', 'Vertical conversion', 'amber'],
+          ['Investor legibility', 'Must be built in', 'green']
+        ],
+        analysis: [
+          {
+            title: 'What actually matters',
+            dot: 'green',
+            items: [
+              'Pipeline velocity by vertical shows whether the market is pulling the product or merely expressing curiosity.',
+              'Stage conversion reveals where the sales process is failing and whether the ICP is coherent.',
+              'Expansion potential or proof point quality matters more than raw logo count at this stage.'
+            ]
+          },
+          {
+            title: 'What to deliberately ignore',
+            dot: 'red',
+            items: [
+              'High meeting counts without progression, bloated top of funnel metrics, and gross pipeline numbers that hide low quality opportunities.',
+              'Any reporting layer that cannot be tied back to a concrete leadership decision.'
+            ]
+          },
+          {
+            title: 'Dashboard structure',
+            dot: 'amber',
+            items: [
+              'Section one should show pipeline movement by stage and vertical.',
+              'Section two should show time to progress and where deals stall.',
+              'Section three should show account quality, expected value, and proof point strength.'
+            ]
+          },
+          {
+            title: 'The number to watch this week',
+            dot: 'blue',
+            items: [
+              'Time from first serious conversation to concrete commercial next step, segmented by vertical.'
+            ]
+          }
+        ]
+      }
+    ];
+
+    const tabsEl = document.getElementById('tabs');
+    const situationTag = document.getElementById('situationTag');
+    const headline = document.getElementById('headline');
+    const contextEl = document.getElementById('context');
+    const assumptionsEl = document.getElementById('assumptions');
+    const runTitle = document.getElementById('runTitle');
+    const runDecision = document.getElementById('runDecision');
+    const runWhy = document.getElementById('runWhy');
+    const runMove = document.getElementById('runMove');
+    const runNext = document.getElementById('runNext');
+    const signalsEl = document.getElementById('signals');
+    const analysisEl = document.getElementById('analysis');
+
+    function renderTabs(activeIdx) {
+      tabsEl.innerHTML = '';
+      scenarios.forEach((s, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'tab' + (idx === activeIdx ? ' active' : '');
+        btn.textContent = s.tab;
+        btn.addEventListener('click', () => renderScenario(idx));
+        tabsEl.appendChild(btn);
+      });
+    }
+
+    function renderScenario(idx) {
+      const s = scenarios[idx];
+      renderTabs(idx);
+
+      situationTag.className = `tag ${s.tagClass}`;
+      situationTag.textContent = s.tagText;
+      headline.textContent = s.headline;
+      contextEl.textContent = s.context;
+
+      assumptionsEl.innerHTML = s.assumptions.map(a => `
+        <div class="assumption">
+          <div class="assumption-num">${a.label}</div>
+          <div class="assumption-text">
+            ${a.text}
+            <span class="tag ${a.cls}" style="margin-left:6px; vertical-align:middle;">${a.tag}</span>
+          </div>
+        </div>
+      `).join('');
+
+      runTitle.textContent = s.lastRun.title;
+      runDecision.textContent = s.lastRun.decision;
+      runWhy.textContent = s.lastRun.why;
+      runMove.textContent = s.lastRun.move;
+      runNext.textContent = s.lastRun.next;
+
+      signalsEl.innerHTML = s.signals.map(([key, value, cls]) => `
+        <div class="metric-row">
+          <span class="metric-key">${key}</span>
+          <span class="metric-val ${cls}">${value}</span>
+        </div>
+      `).join('');
+
+      analysisEl.innerHTML = s.analysis.map(col => `
+        <div class="analysis-col">
+          <div class="analysis-col-title">
+            <span class="dot ${col.dot}"></span>
+            <span>${col.title}</span>
+          </div>
+          ${col.items.map(item => `<div class="analysis-item">${item}</div>`).join('')}
+        </div>
+      `).join('');
+    }
+
+    const d = new Date();
+    document.getElementById('dateStamp').textContent = d.toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric'
+    });
+
+    renderScenario(0);
+  </script>
+</body>
+</html>
